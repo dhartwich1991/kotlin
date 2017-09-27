@@ -4,14 +4,15 @@ import org.gradle.jvm.tasks.Jar
 apply { plugin("kotlin") }
 
 dependencies {
-    compile(projectDist(":kotlin-stdlib"))
+    compile(project(":kotlin-stdlib"))
     compile(project(":core"))
     compile(project(":compiler:backend"))
     compile(project(":compiler:cli-common"))
-    compile(projectRuntimeJar(":kotlin-daemon-client"))
+    compile(project(":kotlin-daemon-client"))
     compile(project(":compiler:frontend"))
     compile(project(":compiler:frontend.java"))
     compile(project(":compiler:frontend.script"))
+    compile(project(":compiler:cli"))
     compile(project(":js:js.frontend"))
     compile(project(":js:js.serializer"))
     compile(project(":compiler:light-classes"))
@@ -27,6 +28,7 @@ dependencies {
     compile(project(":idea:kotlin-gradle-tooling"))
     compile(project(":plugins:uast-kotlin"))
     compile(project(":plugins:uast-kotlin-idea"))
+    compile(project(":kotlin-script-util")) { isTransitive = false }
 
     compile(ideaSdkCoreDeps("intellij-core", "util"))
 
@@ -39,8 +41,7 @@ dependencies {
 
     compile(preloadedDeps("markdown", "kotlinx-coroutines-core"))
 
-    testCompile(projectDist(":kotlin-test:kotlin-test-junit"))
-    testCompile(project(":compiler:cli"))
+    testCompile(project(":kotlin-test:kotlin-test-junit"))
     testCompile(project(":compiler.tests-common"))
     testCompile(project(":idea:idea-test-framework")) { isTransitive = false }
     testCompile(project(":idea:idea-jvm")) { isTransitive = false }
