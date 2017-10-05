@@ -29,9 +29,7 @@ import org.jetbrains.kotlin.psi.KtConstructor
 import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.psiUtil.hasActualModifier
-import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.kotlin.resolve.DescriptorToSourceUtils
-import org.jetbrains.kotlin.resolve.DescriptorUtils
+import org.jetbrains.kotlin.resolve.*
 import org.jetbrains.kotlin.resolve.checkers.ExpectedActualDeclarationChecker.Compatibility.Compatible
 import org.jetbrains.kotlin.resolve.checkers.ExpectedActualDeclarationChecker.Compatibility.Incompatible
 import org.jetbrains.kotlin.resolve.descriptorUtil.classId
@@ -122,10 +120,8 @@ object ExpectedActualDeclarationChecker : DeclarationChecker {
     private fun checkActualDeclarationHasExpected(
             reportOn: KtDeclaration, descriptor: MemberDescriptor, diagnosticHolder: DiagnosticSink, checkActual: Boolean
     ) {
-        // Using the platform module instead of the common module is sort of fine here because the former always depends on the latter.
-        // However, it would be clearer to find the common module this platform module implements and look for expected there instead.
-        // TODO: use common module here
-        val compatibility = findExpectedForActual(descriptor, descriptor.module) ?: return
+        val commonModule = findDependentCommonModule(descriptor) ?: return
+        val compatibility = findExpectedForActual(descriptor, commonModule) ?: return
 
         val hasActualModifier = descriptor.isActual && reportOn.hasActualModifier()
         if (!hasActualModifier) {
@@ -177,6 +173,11 @@ object ExpectedActualDeclarationChecker : DeclarationChecker {
             val incompatibility = compatibility as Map<Incompatible, Collection<MemberDescriptor>>
             diagnosticHolder.report(Errors.ACTUAL_WITHOUT_EXPECT.on(reportOn, descriptor, incompatibility))
         }
+    }
+
+    private fun findDependentCommonModule(descriptor: DeclarationDescriptor): ModuleDescriptor? {
+        val module = descriptor.module
+        return module.allDependencyModules.find { it.getMultiTargetPlatform() == MultiTargetPlatform.Common }
     }
 
     // This should ideally be handled by CallableMemberDescriptor.Kind, but default constructors have kind DECLARATION and non-empty source.
