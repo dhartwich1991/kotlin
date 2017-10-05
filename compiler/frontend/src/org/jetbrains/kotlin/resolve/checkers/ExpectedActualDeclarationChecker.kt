@@ -383,7 +383,7 @@ object ExpectedActualDeclarationChecker : DeclarationChecker {
         if (b.hasStableParameterNames() && !equalsBy(aParams, bParams, ValueParameterDescriptor::getName)) return Incompatible.ParameterNames
         if (!equalsBy(aTypeParams, bTypeParams, TypeParameterDescriptor::getName)) return Incompatible.TypeParameterNames
 
-        if (a.modality != b.modality) return Incompatible.Modality
+        if (a.modality != b.modality && a.modality != Modality.ABSTRACT) return Incompatible.Modality
         if (a.visibility != b.visibility) return Incompatible.Visibility
 
         areCompatibleTypeParameters(aTypeParams, bTypeParams, platformModule, substitutor).let { if (it != Compatible) return it }

@@ -60,7 +60,7 @@ public final actual class DerivedExplicitCheck : Base {
 public final actual class DerivedImplicit : Base {
     public constructor DerivedImplicit()
     public open override /*1*/ /*fake_override*/ fun equals(/*0*/ other: kotlin.Any?): kotlin.Boolean
-    public open override /*1*/ fun foo(): kotlin.Unit
+    public open actual override /*1*/ fun foo(): kotlin.Unit
     public open override /*1*/ /*fake_override*/ fun hashCode(): kotlin.Int
     public open override /*1*/ /*fake_override*/ fun toString(): kotlin.String
 }

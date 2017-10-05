@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 JetBrains s.r.o.
+ * Copyright 2010-2017 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -664,7 +664,11 @@ public abstract class FunctionDescriptorImpl extends DeclarationDescriptorNonRoo
         substitutedDescriptor.setInline(isInline);
         substitutedDescriptor.setTailrec(isTailrec);
         substitutedDescriptor.setSuspend(isSuspend);
-        substitutedDescriptor.setExpect(isExpect);
+        DeclarationDescriptor container = substitutedDescriptor.getContainingDeclaration();
+        boolean isFakeOverrideExpect = isExpect ||
+                    configuration.newModality == Modality.ABSTRACT &&
+                    container instanceof ClassDescriptor && ((ClassDescriptor) container).isExpect();
+        substitutedDescriptor.setExpect(isFakeOverrideExpect);
         substitutedDescriptor.setActual(isActual);
         substitutedDescriptor.setHasStableParameterNames(hasStableParameterNames);
         substitutedDescriptor.setHiddenToOvercomeSignatureClash(configuration.isHiddenToOvercomeSignatureClash);
